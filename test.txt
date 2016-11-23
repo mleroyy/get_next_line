@@ -1,0 +1,8 @@
+Ceci est un texte
+cree specialement
+pour le projet
+get_nex_line.
+Il s'agit d'afficher sur la sortie standard,
+les lignes les unes apres les autres avec une taille de buffer donne.
+C'est donc la raison pour laquelle j'ecrit toutes ces phrases.
+ZZZZZZAA
