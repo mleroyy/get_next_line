@@ -6,7 +6,7 @@
 /*   By: mleroy <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/20 16:07:58 by mleroy            #+#    #+#             */
-/*   Updated: 2016/11/24 21:03:04 by mleroy           ###   ########.fr       */
+/*   Updated: 2016/11/24 18:11:03 by mleroy           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,31 @@ int		get_next_line(const int fd, char **line)
 		return (-1);
 	if ((*line = (char *)malloc(sizeof(char) * (BUFF_SIZE + 1))) == NULL)
 		return (-1);
-	while ((ret = read(fd, info.buf, BUFF_SIZE)))
+	printf("info.tmp = %s\n", info.tmp);
+	if (info.tmp != NULL)
+		*line = ft_strdup(info.tmp);
+	while ((ret = read(fd, info.buf, BUFF_SIZE)) && (print == 0))
 	{
 		info.buf[ret] = '\0';
-
+		if ((info.p = ft_strchr(info.buf, '\n')) != NULL)
+		{
+			*(info.p++) = '\0';
+			info.tmp = info.p;
+			if (line == NULL)
+				*line = ft_strjoin(info.tmp, ft_strdup(info.buf));
+			else
+				*line = ft_strjoin(*line, ft_strdup(info.buf));
+			ft_putstr(*line);
+			print = 1;
+			info.line += 1; // j'enristre dans la structure le nombre de ligne lues'
+			printf("\ninfo.p = %s\n", info.p);
+			printf("\ninfo.line = %i\n", info.line);
+			return (1);
+		}
+		else
+		{
+			*line = ft_strjoin(*line, info.buf);
+		}
 	}
 	return (0);
 }
