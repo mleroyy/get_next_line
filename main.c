@@ -6,7 +6,7 @@
 /*   By: mleroy <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/20 16:07:58 by mleroy            #+#    #+#             */
-/*   Updated: 2016/11/24 20:58:40 by mleroy           ###   ########.fr       */
+/*   Updated: 2016/11/25 20:02:27 by mathieuleroy        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,13 @@ int		main(int argc, char **argv)
 		ft_putstr("Open failed.\n");
 		return (1);
 	}
-	//while((get_next_line(fd, &line) != 0))
-	//	ft_putchar(10);
-	get_next_line(fd, &line);
+	while((get_next_line(fd, &line) != 0))
+	{
+		ft_putstr(line);
 		ft_putchar(10);
+	}
+	//get_next_line(fd, &line);
+		//ft_putchar(10);
 	if (close(fd) == -1)
 		ft_putstr("Close failed.\n");
 	return (0);

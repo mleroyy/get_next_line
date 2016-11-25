@@ -1,28 +1,29 @@
-Assignment name  : print_memory
-Expected files   : print_memory.c
+Assignment name  : repeat_alpha
+Expected files   : repeat_alpha.c
 Allowed functions: write
 --------------------------------------------------------------------------------
 
-Écrire une fonction qui prend (const void *addr, size_t size) et affiche la mémoire pointée comme dans l'exemple.
+Écrire un programme repeat_alpha qui prend une chaîne et l'affiche en répétant
+chaque caractère alphabétique autant de fois que son index dans l'alphabet,
+suivie d'un newline.
 
-Votre fonction sera prototypée comme suit:
+'a' devient 'a', 'b' devient 'bb', 'e' devient 'eeeee', etc...
 
-void	print_memory(const void *addr, size_t size);
+La casse ne change pas.
 
----------
-$> cat main.c
-void	print_memory(const void *addr, size_t size);
+Si le nombre d'arguments n'est pas 1, affiche juste un newline.
 
-int	main(void)
-{
-	int	tab[10] = {0, 23, 150, 255,
-	              12, 16,  21, 42};
+Exemples:
 
-	print_memory(tab, sizeof(tab));
-	return (0);
-}
-$> gcc -Wextra -Wall -Werror main.c print_memory.c && ./a.out | cat -e
-0000 0000 1700 0000 9600 0000 ff00 0000 ................$
-0c00 0000 1000 0000 1500 0000 2a00 0000 ............*...$
-0000 0000 0000 0000                     ........$
-
+$>./repeat_alpha "abc"
+abbccc
+$>./repeat_alpha "Alex." | cat -e
+Alllllllllllleeeeexxxxxxxxxxxxxxxxxxxxxxxx.$
+$>./repeat_alpha 'abacadaba 42!' | cat -e
+abbacccaddddabba 42!$
+$>./repeat_alpha | cat -e
+$
+$>
+$>./repeat_alpha "" | cat -e
+$
+$>

@@ -1,0 +1,90 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mleroy <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2016/11/20 16:07:58 by mleroy            #+#    #+#             */
+/*   Updated: 2016/11/25 19:43:43 by mathieuleroy        ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "get_next_line.h"
+
+static int		ft_sheep_dog(t_info *info, char **line, char **s, char **tmp)
+{
+	char		*p;
+	char		*t;
+
+	t = *line;
+	if ((p = ft_strchr(*s, '\n')) == NULL)//s'il n'y a pas de de \n dans le tmp
+	{
+		*line = ft_strjoin(*line, *s);
+		free(t);
+		t = NULL;
+		*s = NULL;//pour vider le tmp lorsque je copie le reste du tmp dans line
+		return (0);
+	}
+	else//s'il y a un \n dans la chaine de caractere
+	{
+		*p = '\0';
+		p++;
+		*line = ft_strjoin(*line, *s);//je rajoute dans line le debut de la chaine, penser a gerer si line est null ou pas. le strjoin ne marchera pas si line est null
+		free(t);
+		t = NULL;
+		*tmp = p;//je mets le reste de la chaine dans temporary
+		p = NULL;//je free ??
+		info->line += 1;//j'incremente le compteur de ligne lues
+		return (1);//je renvoie 1 a GNL pour lui dire que ce n'est pas fini de lire
+	}
+}
+
+char			**ft_lst_find(int fd, t_info *info, char **tmp)
+{
+	t_list			*search;
+
+	search = info->block;
+	while ((search != NULL) && (search->content_size != (size_t)fd))
+			search = search->next;
+	if (search != NULL)
+		return ((char **)&(search->content));
+	else
+	{
+		search = ft_lstnew(NULL, 0);
+		search->content_size = (size_t)fd;
+		ft_lstadd(&(info->block), search);
+		return ((char **)&(search->content));
+	}
+}
+
+int				get_next_line(const int fd, char **line)
+{
+	static t_info	info;
+	char			*b;
+	char			**tmp;
+
+	tmp = ft_lst_find(fd, &info, tmp);
+	if (line == NULL || fd == -1 || BUFF_SIZE <= 0)
+		return (-1);
+	if ((*line = (char *)malloc(sizeof(char) * (BUFF_SIZE + 1))) == NULL)
+		return (-1);
+	ft_bzero(*line, BUFF_SIZE);
+	if (*tmp != NULL)//si quand j'appelle gnl, il y a encore des caracteres dans le tmp
+	{
+		if (ft_sheep_dog(&info, line, tmp, tmp))//il remnpli line avec soit le debut de la chaine soit la chaine complete s'il ne rencontre pas de \n et retourne 1 s'il trouve un \n.
+			return (1);
+	}
+	while ((info.ret = read(fd, info.buf, BUFF_SIZE)) > 0)// s'il n'y a rien dans info.tmp ou que la totalite du tmp a etait mis dans line sans avoir rencontre de \n, on recommence a remplir le buffer avec read.
+	{
+		info.buf[info.ret] = '\0';
+		b = info.buf;
+		if (ft_sheep_dog(&info, line, &b, tmp))//pareil que plus haut
+			return (1);
+	}
+	if ((info.ret == 0) && (ft_strlen(*line) != 0))
+			return (1);
+	if ((info.ret == 0) && (!line[0]))
+			return (0);
+	return (info.ret);
+}
