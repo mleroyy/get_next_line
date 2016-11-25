@@ -6,7 +6,7 @@
 /*   By: mleroy <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/20 16:07:58 by mleroy            #+#    #+#             */
-/*   Updated: 2016/11/25 17:25:33 by mathieuleroy        ###   ########.fr       */
+/*   Updated: 2016/11/25 17:23:28 by mathieuleroy        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,28 @@ static int		ft_sheep_dog(t_info *info, char **line, char **s)
 		*line = ft_strjoin(*line, *s);//je rajoute dans line le debut de la chaine, penser a gerer si line est null ou pas. le strjoin ne marchera pas si line est null
 		free(t);
 		t = NULL;
-		info->tmp = p;//je mets le reste de la chaine dans temporary
+		info->block->m = &p;//je mets le reste de la chaine dans temporary
 		p = NULL;//je free ??
 		info->line += 1;//j'incremente le compteur de ligne lues
 		return (1);//je renvoie 1 a GNL pour lui dire que ce n'est pas fini de lire
+	}
+}
+
+char			**ft_lst_find(int fd, t_info *info)
+{
+	t_list			*search;
+
+	search = info->block;
+	while ((search != NULL) && (search->content_size != (size_t)fd))
+			search = search->next;
+	if (search != NULL)
+		return ((char **)search->m);
+	else
+	{
+		search = ft_lstnew(NULL, 0);
+		search->content_size = (size_t)fd;
+		ft_lstadd(&(info->block), search);
+		return ((char **)search->m);
 	}
 }
 
@@ -45,14 +63,15 @@ int				get_next_line(const int fd, char **line)
 	static t_info	info;
 	char			*b;
 
+	info.block->m = ft_lst_find(fd, &info);
 	if (line == NULL || fd == -1 || BUFF_SIZE <= 0)
 		return (-1);
 	if ((*line = (char *)malloc(sizeof(char) * (BUFF_SIZE + 1))) == NULL)
 		return (-1);
 	ft_bzero(*line, BUFF_SIZE);
-	if ((info.tmp) != NULL)//si quand j'appelle gnl, il y a encore des caracteres dans le tmp
+	if (*(info.block->m) != NULL)//si quand j'appelle gnl, il y a encore des caracteres dans le tmp
 	{
-		if (ft_sheep_dog(&info, line, (char **)&(info.tmp)))//il remnpli line avec soit le debut de la chaine soit la chaine complete s'il ne rencontre pas de \n et retourne 1 s'il trouve un \n.
+		if (ft_sheep_dog(&info, line, (char **)info.block->m))//il remnpli line avec soit le debut de la chaine soit la chaine complete s'il ne rencontre pas de \n et retourne 1 s'il trouve un \n.
 			return (1);
 	}
 	while ((info.ret = read(fd, info.buf, BUFF_SIZE)) > 0)// s'il n'y a rien dans info.tmp ou que la totalite du tmp a etait mis dans line sans avoir rencontre de \n, on recommence a remplir le buffer avec read.
