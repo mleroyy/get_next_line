@@ -6,7 +6,7 @@
 /*   By: mleroy <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/20 16:07:58 by mleroy            #+#    #+#             */
-/*   Updated: 2016/11/25 13:07:14 by mathieuleroy        ###   ########.fr       */
+/*   Updated: 2016/11/25 14:03:45 by mathieuleroy        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int		ft_sheep_dog(t_info *info, char **line, char **s)
 	t = *line;
 	if ((p = ft_strchr(*s, '\n')) == NULL)//s'il n'y a pas de de \n dans le tmp
 	{
-		*line = ft_strjoin(*line, ft_strdup(*s));
+		*line = ft_strjoin(*line, *s);
 		free(t);
 		t = NULL;
 		*s = NULL;//pour vider le tmp lorsque je copie le reste du tmp dans line
